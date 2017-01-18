@@ -4,12 +4,13 @@ angular.module("SDHelper", [])
 
 .controller("AppController", ["$scope", "$http", function ($scope, $http) {
     $scope.downloadFile = function () {
-        alert("");
+        var ver_data = serializeForm();
+        
         $http({
             method: 'GET',
             url: 'api/handler',
             responseType: 'arraybuffer',
-            params: { ver: localStorage.global }
+            params: { ver: JSON.stringify(ver_data) }
         }).success(function (data, status, headers) {
             headers = headers();
 
@@ -38,3 +39,15 @@ angular.module("SDHelper", [])
         });
     };
 }]);
+
+function serializeForm() {
+    var form_data = $("#data_ver").serializeArray();
+
+    var data = {};
+    var i;
+    for (i = 0; i <= 5; i++) {
+        data[i.toString()] = form_data[i].value;
+    }
+    console.log(data);
+    return data;
+}
