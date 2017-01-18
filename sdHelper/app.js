@@ -4,13 +4,14 @@ angular.module("SDHelper", [])
 
 .controller("AppController", ["$scope", "$http", function ($scope, $http) {
     $scope.downloadFile = function () {
-        var ver_data = serializeForm();
+        var ver_data = JSON.stringify(serializeForm());
+        var step_list = JSON.stringify(set_step_list());
         
         $http({
             method: 'GET',
             url: 'api/handler',
             responseType: 'arraybuffer',
-            params: { ver: JSON.stringify(ver_data) }
+            params: { ver: ver_data,step:step_list }
         }).success(function (data, status, headers) {
             headers = headers();
 
