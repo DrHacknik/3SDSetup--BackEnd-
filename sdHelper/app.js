@@ -4,40 +4,42 @@ angular.module("SDHelper", [])
 
 .controller("AppController", ["$scope", "$http", function ($scope, $http) {
     $scope.downloadFile = function () {
-        var ver_data = JSON.stringify(serializeForm());
-        var step_list = JSON.stringify(set_step_list());
-        
-        $http({
-            method: 'GET',
-            url: 'api/handler',
-            responseType: 'arraybuffer',
-            params: { ver: ver_data,step:step_list }
-        }).success(function (data, status, headers) {
-            headers = headers();
+        if (set_step_list() != false) {
+            var ver_data = JSON.stringify(serializeForm());
+            var step_list = JSON.stringify(set_step_list());
 
-            var filename = headers['x-filename'];
-            var contentType = headers['content-type'];
+            $http({
+                method: 'GET',
+                url: 'api/handler',
+                responseType: 'arraybuffer',
+                params: { ver: ver_data, step: step_list }
+            }).success(function (data, status, headers) {
+                headers = headers();
 
-            var linkElement = document.createElement('a');
-            try {
-                var blob = new Blob([data], { type: contentType });
-                var url = window.URL.createObjectURL(blob);
+                var filename = headers['x-filename'];
+                var contentType = headers['content-type'];
 
-                linkElement.setAttribute('href', url);
-                linkElement.setAttribute("download", filename);
+                var linkElement = document.createElement('a');
+                try {
+                    var blob = new Blob([data], { type: contentType });
+                    var url = window.URL.createObjectURL(blob);
 
-                var clickEvent = new MouseEvent("click", {
-                    "view": window,
-                    "bubbles": true,
-                    "cancelable": false
-                });
-                linkElement.dispatchEvent(clickEvent);
-            } catch (ex) {
-                console.log(ex);
-            }
-        }).error(function (data) {
-            console.log(data);
-        });
+                    linkElement.setAttribute('href', url);
+                    linkElement.setAttribute("download", filename);
+
+                    var clickEvent = new MouseEvent("click", {
+                        "view": window,
+                        "bubbles": true,
+                        "cancelable": false
+                    });
+                    linkElement.dispatchEvent(clickEvent);
+                } catch (ex) {
+                    console.log(ex);
+                }
+            }).error(function (data) {
+                console.log(data);
+            });
+        }   
     };
 }]);
 
@@ -52,3 +54,13 @@ function serializeForm() {
     console.log(data);
     return data;
 }
+$(document).ready(function () {
+    var i=0;
+    for(i=1;i<=11;i++){
+        $("#zero").append("<option value='" + i +"'>" + i + "</option>")
+    }
+    i = 0;
+    for (i = 0; i <= 39; i++) {
+        $("#three").prepend("<option value='" + i + "'>" + i + "</option>")
+    }
+})

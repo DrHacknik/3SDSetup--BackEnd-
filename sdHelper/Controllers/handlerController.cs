@@ -1,18 +1,10 @@
 ﻿using Newtonsoft.Json;
-using Octokit;
-using sdHelper.Models;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-
+using sdHelper.Models;
 
 namespace sdHelper.Controllers
 {
@@ -37,20 +29,22 @@ namespace sdHelper.Controllers
                 String actual_step = step_list[i].ToString();
                 switch (actual_step)
                 {
-
+                    case "soundhax":
+                        strap.soundhax_step(req_data,stamp);
+                        break;
+                    case "d9(hb)":
+                        strap.d9_hb(stamp);
+                        break;
                 }
             }
 
-            //strap.download_repo("", "",stamp);
-
-
-            var response = strap.pack(stamp);
-
-            //File.Delete(HttpContext.Current.Server.MapPath("~/temp/" + stamp));
-            //File.Delete(HttpContext.Current.Server.MapPath("~/temp/" + stamp + ".zip"));
+           var response = strap.pack(stamp);            
 
            return response;
-                      
+
+            File.Delete(HttpContext.Current.Server.MapPath("~/temp/" + stamp));
+            File.Delete(HttpContext.Current.Server.MapPath("~/temp/" + stamp + ".zip"));
+
         }
     }
 }

@@ -5,6 +5,7 @@
     var browser = ver_data[4];
 
     var step_list = [];
+    var compatible = true;
     //Hard-coded, will make it updatable later on
     switch(console){
         case "OLD":
@@ -23,10 +24,12 @@
                 switch (browser <= 25) {
                     case true:
                         //Update latest
+                        compatible = false;
                         break;
 
                     case false:
                         //d9 browser
+                        step_list.push("d9(browser)")
                         break;
                 }
             }
@@ -36,21 +39,31 @@
                     case true:
                         if (vers == 210) {
                             //install arm9
+                            step_list.push("install");
                             //9.2 ctr
+                            step_list.push("9.2_ctr");
                         } else {
                             //Update latest
+                            compatible = false;
                         }
                         break;
 
                     case false:
                         //Update latest
+                        compatible = false;
                         break;
                 }
             }
             break;
 
         case "NEW":
+            compatible = false;
             break;
+    }
+
+    if (!compatible) {
+        step_list = false;
+        alert("You need to update to 11.2 or you need a ds flashcard to continue (Check 3ds.guide for more info)")
     }
     return step_list;
 }

@@ -342,13 +342,14 @@ namespace sdHelper.Models
         }
 
         //Downloads latest release from github repo
-        public static async void download_repo(string author, string repo, string stamp)
+        public static async void download_repo(string author, string repo, string filename,string stamp)
         {
             var client = new GitHubClient(new Octokit.ProductHeaderValue("my-cool-app"));
-            var releases = await client.Repository.Release.GetAll("d0k3", "Decrypt9WIP");
-            download_from_url(releases[0].Assets[0].BrowserDownloadUrl,stamp,"d9.zip");
+            var releases = await client.Repository.Release.GetAll(author, repo);
+            download_from_url(releases[0].Assets[0].BrowserDownloadUrl,stamp,filename);
         }
 
+        //Sets soundhax as hb entrypoint
         public static void soundhax_step(dynamic req_data, string stamp)
         {
             var server = HttpContext.Current.Server;
@@ -360,6 +361,15 @@ namespace sdHelper.Models
             Directory.Move(server.MapPath("~/temp/" + stamp + "/starter/3ds"), server.MapPath("~/temp/" + stamp + "/3ds"));
             Directory.Move(server.MapPath("~/temp/" + stamp + "/starter/boot.3dsx"), server.MapPath("~/temp/" + stamp + "/boot.3dsx"));
             Directory.Delete(server.MapPath("~/temp/" + stamp + "/starter"));
+        }
+
+        //Sets everything ready to run decrypt9 from hbl
+        public static void d9_hb(string stamp)
+        {
+            var server = HttpContext.Current.Server;
+
+            Directory.CreateDirectory(server.MapPath("~/temp/" + stamp + "/files9"));
+            strap.download_repo("d0k3", "Decrypt9WIP", "d9.zip", stamp);
         }
 
         //Packs the folder to a .zip file
