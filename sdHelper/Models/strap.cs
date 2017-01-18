@@ -272,6 +272,8 @@ namespace sdHelper.Models
         //Concatenates soundhax url and downloads the file
          public static void download_soundhax(dynamic req_data, string folder)
         {
+            var server = HttpContext.Current.Server;
+
             String console = req_data["0"].Value.ToString();
             String region = req_data["5"].Value.ToString();
 
@@ -308,14 +310,15 @@ namespace sdHelper.Models
             }
 
             var url = "https://github.com/nedwill/soundhax/raw/master/soundhax-" + region + "-" + console + ".m4a";
-            strap.download_from_url(url, folder, "soundhax-" + region + "-" + console + ".m4a");
-
+            var filename = "soundhax-" + region + "-" + console + ".m4a";
+            strap.download_from_url(url, folder, filename);
+            Directory.Move(server.MapPath("~/temp/" + folder + "/downloads/" + filename), server.MapPath("~/temp/" + folder + "/" + filename));
         }
 
         //Extracts zip file
          public static void extract_zip(string filename, string folder, bool erase)
         {
-            string zipPath = HttpContext.Current.Server.MapPath("~/temp/" + folder + "/" + filename);
+            string zipPath = HttpContext.Current.Server.MapPath("~/temp/" + folder + "/downloads/" + filename);
             string extractPath = HttpContext.Current.Server.MapPath("~/temp/" + folder + "/");
 
             ZipFile.ExtractToDirectory(zipPath, extractPath);
@@ -335,18 +338,18 @@ namespace sdHelper.Models
         {
             using (WebClient webClient = new WebClient())
             {
-                var path = HttpContext.Current.Server.MapPath("~/temp/" + folder + "/" + filename);
+                var path = HttpContext.Current.Server.MapPath("~/temp/" + folder + "/downloads/" + filename);
                 webClient.DownloadFile(url, path);
                 
             }
         }
 
-        //Downloads latest release from github repo
-        public static async void download_repo(string author, string repo, string filename,string stamp)
+        //Get latest release url from github repo
+        public static async Task<String> repo_url(string author, string repo)
         {
             var client = new GitHubClient(new Octokit.ProductHeaderValue("my-cool-app"));
             var releases = await client.Repository.Release.GetAll(author, repo);
-            download_from_url(releases[0].Assets[0].BrowserDownloadUrl,stamp,filename);
+            return releases[0].Assets[0].BrowserDownloadUrl;
         }
 
         //Sets soundhax as hb entrypoint
@@ -356,26 +359,51 @@ namespace sdHelper.Models
 
             strap.payload_url(req_data, stamp);
             strap.download_soundhax(req_data, stamp);
-            download_from_url("http://smealum.github.io/ninjhax2/starter.zip", stamp, "starter.zip");
+            if (!File.Exists(server.MapPath("~/temp/" + stamp + "/downloads/starter.zip")))
+            {
+                download_from_url("http://smealum.github.io/ninjhax2/starter.zip", stamp, "starter.zip");
+            }
             strap.extract_zip("starter.zip", stamp, true);
             Directory.Move(server.MapPath("~/temp/" + stamp + "/starter/3ds"), server.MapPath("~/temp/" + stamp + "/3ds"));
             Directory.Move(server.MapPath("~/temp/" + stamp + "/starter/boot.3dsx"), server.MapPath("~/temp/" + stamp + "/boot.3dsx"));
+            Directory.Move(server.MapPath("~/temp/" + stamp + "/downloads/otherapp.bin"), server.MapPath("~/temp/" + stamp + "/otherapp.bin"));
             Directory.Delete(server.MapPath("~/temp/" + stamp + "/starter"));
         }
 
         //Sets everything ready to run decrypt9 from hbl
-        public static void d9_hb(string stamp)
+        public static async Task d9_hb(string stamp)
         {
             var server = HttpContext.Current.Server;
 
             Directory.CreateDirectory(server.MapPath("~/temp/" + stamp + "/files9"));
-            strap.download_repo("d0k3", "Decrypt9WIP", "d9.zip", stamp);
+            var url = await strap.repo_url("d0k3", "Decrypt9WIP");
+            download_from_url(url, stamp, "d9.zip");
+            extract_file("d9.zip", "Decrypt9WIP.bin", "safehaxpayload.bin", "", stamp);
+        }
+
+        //Extracts desired file to a path
+        public static void extract_file(string zip,string filename_input,string filename_output,string folder,string stamp)
+        {
+            var server = HttpContext.Current.Server;
+            using (ZipArchive archive = ZipFile.OpenRead(server.MapPath("~/temp/" + stamp + "/downloads/" + zip)))
+            {
+                foreach (ZipArchiveEntry entry in archive.Entries)
+                {
+                    if (entry.FullName == filename_input)
+                    {
+                        entry.ExtractToFile(Path.Combine(server.MapPath("~/temp/" + stamp + "/" + folder), filename_output), true);
+                    }
+                }
+            }
         }
 
         //Packs the folder to a .zip file
         public static HttpResponseMessage pack(string name){
             HttpResponseMessage httpResponseMessage = new HttpResponseMessage();
             var path = HttpContext.Current.Server.MapPath("~/temp/");
+
+            File.Delete(path + "downloads");
+
             ZipFile.CreateFromDirectory(path + name, path + name + ".zip");
             string filename = name + ".zip";
             string filePath = HttpContext.Current.Server.MapPath("~/temp/") + filename;

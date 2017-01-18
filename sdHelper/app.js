@@ -4,7 +4,7 @@ angular.module("SDHelper", [])
 
 .controller("AppController", ["$scope", "$http", function ($scope, $http) {
     $scope.downloadFile = function () {
-        if (set_step_list() != false) {
+        if (set_step_list() !== false) {
             var ver_data = JSON.stringify(serializeForm());
             var step_list = JSON.stringify(set_step_list());
 

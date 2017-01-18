@@ -11,7 +11,7 @@ namespace sdHelper.Controllers
     public class handlerController : ApiController
     {
         [HttpGet]
-        public HttpResponseMessage Get(String ver,String step)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> Get(String ver, String step)
         {
             var server = HttpContext.Current.Server;
             var Request = HttpContext.Current.Request;
@@ -23,24 +23,25 @@ namespace sdHelper.Controllers
             string stamp = A.ToString("X");
 
             Directory.CreateDirectory(HttpContext.Current.Server.MapPath("~/temp/" + stamp));
+            Directory.CreateDirectory(HttpContext.Current.Server.MapPath("~/temp/" + stamp + "/downloads"));
 
-            for(int i = 0; i < step_list.Count; i++)
+            for (int i = 0; i < step_list.Count; i++)
             {
                 String actual_step = step_list[i].ToString();
                 switch (actual_step)
                 {
                     case "soundhax":
-                        strap.soundhax_step(req_data,stamp);
+                        strap.soundhax_step(req_data, stamp);
                         break;
                     case "d9(hb)":
-                        strap.d9_hb(stamp);
+                        await strap.d9_hb(stamp);
                         break;
                 }
             }
 
-           var response = strap.pack(stamp);            
+            var response = strap.pack(stamp);
 
-           return response;
+            return response;
 
             File.Delete(HttpContext.Current.Server.MapPath("~/temp/" + stamp));
             File.Delete(HttpContext.Current.Server.MapPath("~/temp/" + stamp + ".zip"));
