@@ -19,11 +19,12 @@ namespace sdHelper.Controllers
     public class handlerController : ApiController
     {
         [HttpGet]
-        public HttpResponseMessage Get(String ver)
+        public HttpResponseMessage Get(String ver,String step)
         {
             var server = HttpContext.Current.Server;
             var Request = HttpContext.Current.Request;
             var req_data = JsonConvert.DeserializeObject<dynamic>(ver);
+            var step_list = JsonConvert.DeserializeObject<dynamic>(step);
 
             var r = new Random();
             int A = r.Next(1000, 5000);
@@ -31,15 +32,16 @@ namespace sdHelper.Controllers
 
             Directory.CreateDirectory(HttpContext.Current.Server.MapPath("~/temp/" + stamp));
 
-            strap.payload_url(req_data, stamp);
-            strap.download_soundhax(req_data, stamp);
-            strap.download_from_url("http://smealum.github.io/ninjhax2/starter.zip", stamp, "starter.zip");
-            strap.extract_zip("starter.zip", stamp, true);
-            Directory.Move(server.MapPath("~/temp/" + stamp + "/starter/3ds"), server.MapPath("~/temp/" + stamp + "/3ds"));
-            Directory.Move(server.MapPath("~/temp/" + stamp + "/starter/boot.3dsx"), server.MapPath("~/temp/" + stamp + "/boot.3dsx"));
-            Directory.Delete(server.MapPath("~/temp/" + stamp + "/starter"));
+            for(int i = 0; i < step_list.Count; i++)
+            {
+                String actual_step = step_list[i].ToString();
+                switch (actual_step)
+                {
 
-            strap.download_repo("", "",stamp);
+                }
+            }
+
+            //strap.download_repo("", "",stamp);
 
 
             var response = strap.pack(stamp);
@@ -47,9 +49,8 @@ namespace sdHelper.Controllers
             //File.Delete(HttpContext.Current.Server.MapPath("~/temp/" + stamp));
             //File.Delete(HttpContext.Current.Server.MapPath("~/temp/" + stamp + ".zip"));
 
-            return response;
-            
-            
+           return response;
+                      
         }
     }
 }

@@ -349,6 +349,19 @@ namespace sdHelper.Models
             download_from_url(releases[0].Assets[0].BrowserDownloadUrl,stamp,"d9.zip");
         }
 
+        public static void soundhax_step(dynamic req_data, string stamp)
+        {
+            var server = HttpContext.Current.Server;
+
+            strap.payload_url(req_data, stamp);
+            strap.download_soundhax(req_data, stamp);
+            download_from_url("http://smealum.github.io/ninjhax2/starter.zip", stamp, "starter.zip");
+            strap.extract_zip("starter.zip", stamp, true);
+            Directory.Move(server.MapPath("~/temp/" + stamp + "/starter/3ds"), server.MapPath("~/temp/" + stamp + "/3ds"));
+            Directory.Move(server.MapPath("~/temp/" + stamp + "/starter/boot.3dsx"), server.MapPath("~/temp/" + stamp + "/boot.3dsx"));
+            Directory.Delete(server.MapPath("~/temp/" + stamp + "/starter"));
+        }
+
         //Packs the folder to a .zip file
         public static HttpResponseMessage pack(string name){
             HttpResponseMessage httpResponseMessage = new HttpResponseMessage();

@@ -266,7 +266,6 @@
     <Content Include="Global.asax" />
     <Content Include="index.html" />
     <Content Include="jquery-1.10.2.js" />
-    <Content Include="payload_select.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Areas\HelpPage\Views\Web.config" />
@@ -303,6 +302,7 @@
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="step_logic.js" />
     <Content Include="test.html" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -324,7 +324,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="bower_components\" />
-    <Folder Include="temp\test\" />
+    <Folder Include="temp\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
