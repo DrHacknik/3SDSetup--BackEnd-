@@ -37,7 +37,7 @@
             if (vers >= 100 && vers <= 310) {
                 switch (browser > 0) {
                     case true:
-                        if (vers == 210) {
+                        if (vers === 210) {
                             //install arm9
                             step_list.push("install");
                             //9.2 ctr
